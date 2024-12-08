@@ -23,3 +23,15 @@ export function* slidingWindow(
     }
   }
 }
+
+export function gridLocations(grid: string[], ignore: string[] = ["."]) {
+  const locations: Record<string, [number, number][]> = {};
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[0].length; j++) {
+      if (ignore.includes(grid[i][j])) continue;
+      if (grid[i][j] in locations) locations[grid[i][j]].push([j, i]);
+      else locations[grid[i][j]] = [[j, i]];
+    }
+  }
+  return locations;
+}

@@ -1,41 +1,48 @@
-import { readInput } from "./util.ts";
+import { readInput, gridLocations } from "./util.ts";
 
-if (import.meta.main) {
-  const input = await readInput();
+type antinodeGenerator = (
+  grid: string[],
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) => Generator<number[], void, unknown>;
 
-  console.log("Part 1:", part1(input));
-  console.log("Part 2:", part2(input));
-}
+const allAntinodes: antinodeGenerator = function* (grid, x1, y1, x2, y2) {
+  const [rise, run] = [y2 - y1, x2 - x1];
+  while (grid[y1]?.[x1] !== undefined) {
+    yield [x1, y1];
+    (x1 -= run), (y1 -= rise);
+  }
+  while (grid[y2]?.[x2] !== undefined) {
+    yield [x2, y2];
+    (x2 += run), (y2 += rise);
+  }
+};
 
-function antinodeLocations(x1: number, y1: number, x2: number, y2: number) {
-  const rise = y2 - y1;
-  const run = x2 - x1;
-  return [x1 - run, y1 - rise, x2 + run, y2 + rise];
-}
+const closestAntinodes: antinodeGenerator = function* (_grid, x1, y1, x2, y2) {
+  const [rise, run] = [y2 - y1, x2 - x1];
+  yield [x1 - run, y1 - rise];
+  yield [x2 + run, y2 + rise];
+};
 
-function part1(input: string): number {
+function countAntinodes(input: string, iterAntinodes: antinodeGenerator) {
   const antinodes = new Set<string>();
 
-  const antennas: Record<string, [number, number][]> = {};
   const grid = input.split("\n");
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[0].length; j++) {
-      if (grid[i][j] !== ".") {
-        if (grid[i][j] in antennas) antennas[grid[i][j]].push([j, i]);
-        else antennas[grid[i][j]] = [[j, i]];
-      }
-    }
-  }
+  const antennas = gridLocations(grid);
 
   for (const locations of Object.values(antennas)) {
     for (let i = 0; i < locations.length; i++) {
       for (let j = 0; j < locations.length; j++) {
         if (i === j) continue;
-        const [x1, y1] = locations[i];
-        const [x2, y2] = locations[j];
-        const [an1x, an1y, an2x, an2y] = antinodeLocations(x1, y1, x2, y2);
-        if (grid[an1y]?.[an1x] !== undefined) antinodes.add(`${an1x},${an1y}`);
-        if (grid[an2y]?.[an2x] !== undefined) antinodes.add(`${an2x},${an2y}`);
+        for (const [x, y] of iterAntinodes(
+          grid,
+          ...locations[i],
+          ...locations[j]
+        )) {
+          if (grid[y]?.[x] !== undefined) antinodes.add(`${x},${y}`);
+        }
       }
     }
   }
@@ -43,8 +50,19 @@ function part1(input: string): number {
   return antinodes.size;
 }
 
+function part1(input: string): number {
+  return countAntinodes(input, closestAntinodes);
+}
+
 function part2(input: string): number {
-  return 0;
+  return countAntinodes(input, allAntinodes);
+}
+
+if (import.meta.main) {
+  const input = await readInput();
+
+  console.log("Part 1:", part1(input));
+  console.log("Part 2:", part2(input));
 }
 
 // Test
@@ -67,6 +85,17 @@ Deno.test("Part 1: ", () => {
 });
 
 Deno.test("Part 2: ", () => {
-  const out = part2(``);
-  assertEquals(out, 0);
+  const out = part2(`............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............`);
+  assertEquals(out, 34);
 });
