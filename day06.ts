@@ -225,3 +225,27 @@ Deno.test("Part 2: The 2 guards", () => {
 .^.........`);
   assertEquals(out, 4);
 });
+
+Deno.test("Part 2: None again", () => {
+  const out = part2(`.##.
+#..#
+....
+..^.`);
+  assertEquals(out, 0);
+});
+
+Deno.test("Part 2: None again", () => {
+  const out = part2(`#.....
+.....#
+^.#..#
+....#.`);
+  assertEquals(out, 1);
+});
+
+Deno.test("Part 2: ...", () => {
+  const out = part2(`########
+#......#
+...^...#
+########`);
+  assertEquals(out, 6);
+});
