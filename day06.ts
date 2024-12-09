@@ -40,6 +40,9 @@ function part1(input: string): number {
 
 function part2(input: string): number {
   let [grid, posX, posY] = buildGrid(input);
+  for (const line of grid) {
+    console.log(line.join(""));
+  }
   const newObstacles = new Set();
   const visited = new Set([`${posX},${posY}`]);
   for (
@@ -56,6 +59,7 @@ function part2(input: string): number {
     const [newX, newY] = [posX + dX, posY + dY];
     if (visited.has(`${newX},${newY}`)) {
       // Already been here so don't try an obstacle!
+      visited.add(`${posX},${posY}`);
       continue;
     }
     if (grid[newY]?.[newX] === undefined) continue;
@@ -81,7 +85,7 @@ function part2(input: string): number {
     // console.log(posX, posY, newX, newY, vectors);
     visited.add(`${posX},${posY}`);
   }
-  // console.log(newObstacles);
+  console.log(newObstacles);
 
   return newObstacles.size;
 }
@@ -248,4 +252,15 @@ Deno.test("Part 2: ...", () => {
 ...^...#
 ########`);
   assertEquals(out, 6);
+});
+
+Deno.test("Part 2: Edge case", () => {
+  const out = part2(`..#.....
+.......#
+........
+.#......
+#...#...
+#.......
+..^...#.`);
+  assertEquals(out, 4);
 });
