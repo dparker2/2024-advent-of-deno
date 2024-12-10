@@ -24,7 +24,7 @@ export function* slidingWindow(
   }
 }
 
-export function gridLocations(grid: string[], ignore: string[] = ["."]) {
+export function gridLocations(grid: string[], ignore: string = ".") {
   const locations: Record<string, [number, number][]> = {};
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[0].length; j++) {
@@ -34,4 +34,41 @@ export function gridLocations(grid: string[], ignore: string[] = ["."]) {
     }
   }
   return locations;
+}
+
+export function bfs(
+  grid: string[],
+  starts: [number, number][],
+  isReachable: (x0: number, y0: number, x1: number, y1: number) => boolean
+) {
+  const visited = grid.map((row) => Array<boolean>(row.length).fill(false));
+  const queue: [number, number][] = [...starts];
+  const path: [number, number][] = [];
+
+  for (const [x0, y0] of starts) {
+    visited[y0][x0] = true;
+  }
+
+  let current;
+  while ((current = queue.shift())) {
+    const [x, y] = current;
+    path.push(current);
+
+    for (const [nx, ny] of [
+      [x, y - 1],
+      [x + 1, y],
+      [x, y + 1],
+      [x - 1, y],
+    ]) {
+      if (
+        grid[ny]?.[nx] !== undefined &&
+        !visited[ny][nx] &&
+        isReachable(x, y, nx, ny)
+      ) {
+        visited[ny][nx] = true;
+        queue.push([nx, ny]);
+      }
+    }
+  }
+  return path;
 }
