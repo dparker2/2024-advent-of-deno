@@ -39,11 +39,11 @@ export function gridLocations(grid: string[], ignore: string = ".") {
 export function bfs(
   grid: string[],
   starts: [number, number][],
-  isReachable: (x0: number, y0: number, x1: number, y1: number) => boolean
+  onNeighbor: (x0: number, y0: number, x1: number, y1: number) => boolean
 ) {
   const visited = grid.map((row) => Array<boolean>(row.length).fill(false));
   const queue: [number, number][] = [...starts];
-  const path: [number, number][] = [];
+  const explored: [number, number][] = [];
 
   for (const [x0, y0] of starts) {
     visited[y0][x0] = true;
@@ -52,7 +52,7 @@ export function bfs(
   let current;
   while ((current = queue.shift())) {
     const [x, y] = current;
-    path.push(current);
+    explored.push(current);
 
     for (const [nx, ny] of [
       [x, y - 1],
@@ -62,13 +62,13 @@ export function bfs(
     ]) {
       if (
         grid[ny]?.[nx] !== undefined &&
-        !visited[ny][nx] &&
-        isReachable(x, y, nx, ny)
+        onNeighbor(x, y, nx, ny) &&
+        !visited[ny][nx]
       ) {
         visited[ny][nx] = true;
         queue.push([nx, ny]);
       }
     }
   }
-  return path;
+  return explored;
 }

@@ -5,15 +5,23 @@ function main(input: string): [number, number] {
   const trailheads = gridLocations(grid, "123456789")["0"];
 
   let score = 0;
+  let rating = 0;
   for (const start of trailheads) {
-    const path = bfs(grid, [start], (x0, y0, x1, y1) => {
-      return Number(grid[y1][x1]) - Number(grid[y0][x0]) === 1;
+    const pathcount = grid.map((row) => Array<number>(row.length).fill(0));
+    pathcount[start[1]][start[0]] = 1;
+
+    const expored = bfs(grid, [start], (x0, y0, x1, y1) => {
+      const reachable = Number(grid[y1][x1]) - Number(grid[y0][x0]) === 1;
+      if (reachable) pathcount[y1][x1] += pathcount[y0][x0];
+      return reachable;
     });
-    score += path.filter(([x, y]) => grid[y][x] === "9").length;
-    // console.log(path.map(([x, y]) => grid[y][x]));
+
+    const ends = expored.filter(([x, y]) => grid[y][x] === "9");
+    score += ends.length;
+    for (const [x, y] of ends) rating += pathcount[y][x];
   }
 
-  return [score, 0];
+  return [score, rating];
 }
 
 if (import.meta.main) {
@@ -54,4 +62,16 @@ Deno.test("Part 2: Simple", () => {
 1187651
 1191111`);
   assertEquals(out, 3);
+});
+
+Deno.test("Part 2: Large", () => {
+  const [_, out] = main(`89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732`);
+  assertEquals(out, 81);
 });
