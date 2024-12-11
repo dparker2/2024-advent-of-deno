@@ -10,13 +10,13 @@ function main(input: string): [number, number] {
     const pathcount = grid.map((row) => Array<number>(row.length).fill(0));
     pathcount[start[1]][start[0]] = 1;
 
-    const expored = bfs(grid, [start], (x0, y0, x1, y1) => {
+    const explored = bfs(grid, [start], (x0, y0, x1, y1) => {
       const reachable = Number(grid[y1][x1]) - Number(grid[y0][x0]) === 1;
       if (reachable) pathcount[y1][x1] += pathcount[y0][x0];
       return reachable;
     });
 
-    const ends = expored.filter(([x, y]) => grid[y][x] === "9");
+    const ends = explored.filter(([x, y]) => grid[y][x] === "9");
     score += ends.length;
     for (const [x, y] of ends) rating += pathcount[y][x];
   }
