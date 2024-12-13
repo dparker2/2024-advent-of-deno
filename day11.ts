@@ -1,4 +1,3 @@
-// Template
 import { readInput } from "./util.ts";
 
 function addTo(object: Record<string, number>, stone: string, count: number) {
