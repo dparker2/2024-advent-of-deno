@@ -36,8 +36,8 @@ export function gridLocations(grid: string[], ignore: string = ".") {
   return locations;
 }
 
-export function bfs(
-  grid: string[],
+export function bfs<T extends ArrayLike<T>>(
+  grid: T[],
   starts: [number, number][],
   onNeighbor: (x0: number, y0: number, x1: number, y1: number) => boolean
 ) {
@@ -71,4 +71,8 @@ export function bfs(
     }
   }
   return explored;
+}
+
+export function mod(x: number, n: number) {
+  return ((x % n) + n) % n;
 }
