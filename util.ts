@@ -24,7 +24,10 @@ export function* slidingWindow(
   }
 }
 
-export function gridLocations(grid: string[], ignore: string = ".") {
+export function gridLocations(
+  grid: string[] | string[][],
+  ignore: string = "."
+) {
   const locations: Record<string, [number, number][]> = {};
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[0].length; j++) {
@@ -75,4 +78,8 @@ export function bfs<T extends ArrayLike<T>>(
 
 export function mod(x: number, n: number) {
   return ((x % n) + n) % n;
+}
+
+export function doubleSplit(str: string) {
+  return str.split("\n").map((row) => row.split(""));
 }
